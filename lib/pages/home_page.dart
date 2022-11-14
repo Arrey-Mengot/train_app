@@ -37,12 +37,12 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.blueGrey,
                 ),
                 label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.search_outlined,
-                  color: Colors.blueGrey,
-                ),
-                label: 'Explore'),
+            // BottomNavigationBarItem(
+            //     icon: Icon(
+            //       Icons.search_outlined,
+            //       color: Colors.blueGrey,
+            //     ),
+            //     label: 'Explore'),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.airplane_ticket_outlined,
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
 List<Widget> pages = [
   const Home(),
   // const Text('Home', style: TextStyle(color: Colors.black),),
-  const Center(child: SearchPage()),
+  // const Center(child: SearchPage()),
   const Center(child: Text('Ticket')),
   const AdminPage(),
 ];
