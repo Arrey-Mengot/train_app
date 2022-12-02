@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:train_app/models/train.dart';
 
 import 'itinerary.dart';
 import 'location.dart';
@@ -85,6 +86,32 @@ class Dao {
       }
       return trips;
     });
+  }
+
+  // Add a single train to DB
+  Future<void> addTrain(Train train) async {
+    final ref = db.collection('trains').withConverter(
+        fromFirestore: Train.fromFirestore,
+        toFirestore: (Train train, _) => train.toFireStore());
+    await ref.add(train).then(
+        (value) => print('added data with the following id ${value.id}'),
+        onError: (object, trace) => print('error occured'));
+  }
+
+//Get trains from the DB to be put in the trip
+  Future<List<Train>> getTrains() async {
+    final List<Train> trains = [];
+    //Use our from and to methods here to convert from and to firebase objects
+    final ref = db.collection('locations').withConverter(
+        fromFirestore: Train.fromFirestore,
+        toFirestore: (Train train, _) => train.toFireStore());
+    await ref.get().then((snapshot) {
+      for (var train in snapshot.docs) {
+        trains.add(train.data());
+      }
+    });
+
+    return trains;
   }
 }
 

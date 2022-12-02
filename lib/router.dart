@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:train_app/pages/home.dart';
 import 'package:train_app/pages/home_page.dart';
 import 'package:train_app/pages/login_page.dart';
+import 'package:train_app/pages/reset_email.dart';
 
 import 'package:train_app/pages/sign_up_page.dart';
 import 'package:train_app/pages/ticket_options.dart';
+import 'package:train_app/widgets/train_seats.dart';
 
 import 'authentication/auth.dart';
 
@@ -19,8 +21,12 @@ final routerProvider = Provider((ref) {
         final createAccountLoc = state.namedLocation('signup');
         final creatingAccount = state.subloc == createAccountLoc;
         final homeLoc = state.namedLocation('home');
+        // final resetPasswordLoc = state.namedLocation('passwordReset');
+        // final resetingPassword = state.subloc == resetPasswordLoc;
+
         if (!loggedIn && !loggingIn && !creatingAccount) return loginLoc;
         if (loggedIn && (loggingIn || creatingAccount)) return homeLoc;
+        // if (resetingPassword) return resetPasswordLoc;
         return null;
       },
       initialLocation: '/login',
@@ -55,6 +61,18 @@ final routerProvider = Provider((ref) {
             path: '/options',
             builder: (context, state) {
               return const TicketOptionsPage();
-            })
+            }),
+        GoRoute(
+            name: 'seats',
+            path: '/seats',
+            builder: (context, state) {
+              return const TrainSeat();
+            }),
+        GoRoute(
+            name: 'passwordReset',
+            path: '/passwordReset',
+            builder: (context, state) {
+              return const PasswordResetPage();
+            }),
       ]);
 });

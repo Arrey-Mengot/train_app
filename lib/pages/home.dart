@@ -456,17 +456,27 @@ class SearchTripPage extends ConsumerWidget {
 
                                 context.push('/options');
                               },
-                              child: TrainCard(
-                                  to: trip[index].destination,
-                                  from: trip[index].source,
-                                  cost: trip[index].price.toString(),
-                                  trainName: 'DZ',
-                                  arrivalTime: trip[index].arrivalDate,
-                                  departureTime: trip[index].departureDate,
-                                  duration: '5hr',
-                                  toCode:
-                                      trip[index].destinationCode.toString(),
-                                  fromCode: trip[index].sourceCode.toString()),
+                              child: Column(
+                                children: [
+                                  TrainCard(
+                                      to: trip[index].destination,
+                                      from: trip[index].source,
+                                      cost: trip[index].price.toString(),
+                                      trainName: 'DZ',
+                                      arrivalTime: trip[index].arrivalDate,
+                                      departureTime: trip[index].departureDate,
+                                      duration:
+                                          trip[index].departureTime.toString(),
+                                      toCode: trip[index]
+                                          .destinationCode
+                                          .toString(),
+                                      fromCode:
+                                          trip[index].sourceCode.toString()),
+                                  const Divider(
+                                    color: Colors.green,
+                                  )
+                                ],
+                              ),
                             );
                           }),
                         );

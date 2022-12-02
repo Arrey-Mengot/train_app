@@ -6,6 +6,7 @@ class Itinerary {
   final String destination;
   final String? trainId;
   final String departureDate;
+  final String? departureTime;
   final String arrivalDate;
   final int? price;
   final String? sourceCode;
@@ -19,6 +20,7 @@ class Itinerary {
       required this.departureDate,
       required this.arrivalDate,
       this.price,
+      this.departureTime,
       this.sourceCode,
       this.destinationCode});
 
@@ -34,6 +36,7 @@ class Itinerary {
         destination: data?["destination"],
         trainId: data?["trainId"],
         departureDate: data?["departureDate"],
+        departureTime: data?["departureTime"],
         arrivalDate: data?["arrivalDate"],
         price: data?["price"],
         sourceCode: data?["sourceCode"],
@@ -44,6 +47,7 @@ class Itinerary {
   Map<String, dynamic> toFireStore() {
     return {
       if (id != null) "id": id,
+      if (departureTime != null) "id": departureTime,
       "source": source,
       "destination": destination,
       if (trainId != null) "trainId": trainId,

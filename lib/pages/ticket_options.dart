@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:train_app/pages/home.dart';
 import '../widgets/class_card.dart';
 import '../widgets/train_card.dart';
+import 'package:go_router/go_router.dart';
 
 class TicketOptionsPage extends StatefulWidget {
   const TicketOptionsPage({super.key});
@@ -99,6 +100,9 @@ class _TicketOptionsPageState extends State<TicketOptionsPage> {
               padding: const EdgeInsets.only(right: 8.0),
               child: Card(
                 child: ListTile(
+                  onTap: () {
+                    context.go('/seats');
+                  },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   contentPadding: const EdgeInsets.all(5),
