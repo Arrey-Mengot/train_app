@@ -41,7 +41,10 @@ class Home extends StatelessWidget {
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 8.0),
-            child: UserCircleAvatar(),
+            child: UserCircleAvatar(
+              radiusOut: 19,
+              radiusIn: 18,
+            ),
           )
         ],
         elevation: 0.0,
@@ -350,8 +353,12 @@ class MyTextFormField extends StatelessWidget {
 
 class UserCircleAvatar extends ConsumerWidget {
   const UserCircleAvatar({
+    this.radiusIn,
+    this.radiusOut,
     Key? key,
   }) : super(key: key);
+  final double? radiusIn;
+  final double? radiusOut;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -360,11 +367,11 @@ class UserCircleAvatar extends ConsumerWidget {
     final String? url = ref.watch(authStateProvider).value?.photoURL;
     return CircleAvatar(
       backgroundColor: Colors.white.withOpacity(0.7),
-      radius: 20,
+      radius: radiusOut,
       child: CircleAvatar(
         backgroundImage:
             NetworkImage(url != null ? url.toString() : defaultUrl),
-        radius: 19,
+        radius: radiusIn,
       ),
     );
   }

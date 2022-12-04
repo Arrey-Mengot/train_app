@@ -4,9 +4,10 @@ import 'package:train_app/pages/boarding_pass.dart';
 import 'package:train_app/pages/home.dart';
 import 'package:train_app/pages/home_page.dart';
 import 'package:train_app/pages/login_page.dart';
-import 'package:train_app/pages/reset_email.dart';
+import 'package:train_app/pages/my_tickets.dart';
 
 import 'package:train_app/pages/sign_up_page.dart';
+import 'package:train_app/pages/thanks.dart';
 import 'package:train_app/pages/ticket_options.dart';
 import 'package:train_app/widgets/train_seats.dart';
 
@@ -68,16 +69,22 @@ final routerProvider = Provider((ref) {
               return const TrainSeat();
             }),
         GoRoute(
-            name: 'passwordReset',
-            path: '/passwordReset',
+            name: 'myTickets',
+            path: '/myTickets',
             builder: (context, state) {
-              return const PasswordResetPage();
+              return const MyTickets();
             }),
         GoRoute(
             name: 'ticket',
             path: '/ticket',
             builder: (context, state) {
               return const BoardingPassPage();
+            }),
+        GoRoute(
+            name: 'thanks',
+            path: '/thanks',
+            builder: (context, state) {
+              return const ThankYou();
             }),
       ]);
 });

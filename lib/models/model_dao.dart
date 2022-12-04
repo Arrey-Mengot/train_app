@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:train_app/authentication/auth.dart';
 import 'package:train_app/models/train.dart';
 import 'package:train_app/models/ticket.dart';
+import 'package:train_app/pages/home.dart';
+import 'package:train_app/pages/ticket_options.dart';
 
 import 'itinerary.dart';
 import 'location.dart';
@@ -11,6 +14,8 @@ import 'users.dart';
 class Dao {
   final db = FirebaseFirestore.instance;
   List<Ticket> tickets = [];
+  List<Ticket> ticketsByUser = [];
+  List<Ticket> trips = [];
 
   Stream get allCities => db.collection('locations').snapshots();
 
@@ -58,6 +63,17 @@ class Dao {
         .get()
         .then((snapshot) => snapshot.docs.first.data());
     return trainUser.firstName;
+  }
+
+  Future<TrainUser> getUser(String id) async {
+    final ref = db.collection('users').withConverter(
+        fromFirestore: TrainUser.fromFirestore,
+        toFirestore: (TrainUser user, _) => user.toFireStore());
+    TrainUser trainUser = await ref
+        .where('id', isEqualTo: id)
+        .get()
+        .then((snapshot) => snapshot.docs.first.data());
+    return trainUser;
   }
 
 // Adding a trip in the DB. Admin stuff
@@ -177,13 +193,6 @@ class Dao {
         });
       }
     });
-    // await ref.get().then((snapshot) {
-    //   for (var wagon in snapshot.docs) {
-    //     wagons.add(wagon.data());
-    //   }
-    // });
-
-    // return wagons;
   }
 
 //get train ticket by ID
@@ -221,35 +230,40 @@ class Dao {
     });
   }
 
-  // Future<List<Ticket>> getTrainTicketsByID(String tripID, ticketID) async {
+  // Stream<List<Ticket>> getTrainTicketsByID(String tripID, ticketID) {
   //   // List<Ticket> tickets;
 
-  //   final  tripsCollectionRef = await db
+  //   return db
   //       .collection('trips')
   //       .withConverter(
   //           fromFirestore: Itinerary.fromFirestore,
   //           toFirestore: (Itinerary trip, _) => trip.toFireStore())
   //       .where('id', isEqualTo: tripID)
-  //       .get();
-  //   List<Future<QuerySnapshot<Ticket>>>  ticketCollectionRef =  tripsCollectionRef.docs.map((e)async {
-  //     return await db
-  //       .collection('trips')
-  //       .doc(e.id)
-  //       .collection('tickets')
-  //       .withConverter(
-  //           fromFirestore: Ticket.fromFirestore,
-  //           toFirestore: (Ticket ticket, _) => ticket.toFireStore())
-  //       .where('ticketID', isEqualTo: ticketID)
-  //       .get();
-  //   }).toList();
-  //   final tickets =  ticketCollectionRef.map(
-  //     (e) =>e.then((value) => value.docs.map((e) => e.data()).toList() )
-  //     ) ;
+  //       .get()
+  //       .then((value) {
+  //     for (var e in value.docs) {
+  //       db
+  //           .collection('trips')
+  //           .doc(e.id)
+  //           .collection('tickets')
+  //           .withConverter(
+  //               fromFirestore: Ticket.fromFirestore,
+  //               toFirestore: (Ticket ticket, _) => ticket.toFireStore())
+  //           .where('ticketID', isEqualTo: ticketID)
+  //           .snapshots()
+  //           .map((event) {
+  //         List<Ticket> tics = [];
+  //         for (var element in event.docs) {
+  //           tics.add(element.data());
+  //         }
+  //         return tics;
+  //       });
+  //     }
+  //   });
   // }
 
 //get train ticket by user
   Future<List<Ticket>> getTrainTicketsByUser(String owner) async {
-    List<Ticket> tickets = [];
     //Use our from and to methods here to convert from and to firebase objects
     final trainRef = db
         .collection('trips')
@@ -270,16 +284,16 @@ class Dao {
             .get()
             .then((subcol) {
           for (var tic in subcol.docs) {
-            tickets.add(tic.data());
-            print(tic.data().owner);
-            print(tic.data().ticketID);
+            ticketsByUser.add(tic.data());
+            // print(tic.data().owner);
+            // print(tic.data().ticketID);
             // print(element.data().noOfSeats);
           }
         });
       }
     });
 
-    return tickets;
+    return ticketsByUser;
   }
 }
 
@@ -287,3 +301,21 @@ class Dao {
 final daoProvider = Provider<Dao>((ref) {
   return Dao();
 });
+
+final futureTicketProvider = FutureProvider<List<Ticket>>(
+  (ref) {
+    final dao = ref.watch(daoProvider);
+    final tripID = ref.watch(tripIDProvider);
+    final ticketID = ref.watch(ticketIDProvider);
+    return dao.getTrainTicketByID(tripID, ticketID);
+  },
+);
+
+final futureTicketByUserProvider = FutureProvider<List<Ticket>>(
+  (ref) {
+    final dao = ref.watch(daoProvider);
+    final userID = ref.watch(authenticationProvider).currentUserID;
+
+    return dao.getTrainTicketsByUser(userID);
+  },
+);

@@ -3,22 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:train_app/authentication/auth.dart';
 import 'package:train_app/models/model_dao.dart';
 import 'package:train_app/pages/boarding_pass.dart';
+import 'package:train_app/pages/my_tickets.dart';
 import 'package:train_app/pages/search_page.dart';
 
 import '../models/location.dart';
 import '../models/train.dart';
 import '../widgets/train_seats.dart';
+import 'drawer.dart';
 import 'home.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
+  bool isAdmin = false;
   void _onTap(int currentIndex) {
     setState(() {
       _selectedIndex = currentIndex;
@@ -27,8 +30,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    String currentUserId = ref.watch(authenticationProvider).currentUserID;
+
+    ref.watch(daoProvider).getUser(currentUserId).then((user) {
+      setState(() {
+        isAdmin = user.isAdmin!;
+      });
+    });
     // _currentIndex = 0;
     return Scaffold(
+      drawer: isAdmin ? const MyDrawer() : null,
       bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onTap,
@@ -40,12 +51,6 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.blueGrey,
                 ),
                 label: 'Home'),
-            // BottomNavigationBarItem(
-            //     icon: Icon(
-            //       Icons.search_outlined,
-            //       color: Colors.blueGrey,
-            //     ),
-            //     label: 'Explore'),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.airplane_ticket_outlined,
@@ -70,9 +75,7 @@ class _HomePageState extends State<HomePage> {
 
 List<Widget> pages = [
   const Home(),
-  // const Text('Home', style: TextStyle(color: Colors.black),),
-  // const Center(child: SearchPage()),
-  const BoardingPassPage(),
+  const MyTickets(),
   const AdminPage(),
 ];
 
@@ -123,6 +126,7 @@ class _AdminPageState extends ConsumerState<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         actions: [
@@ -140,46 +144,58 @@ class _AdminPageState extends ConsumerState<AdminPage> {
           )
         ],
         backgroundColor: Colors.white,
+        elevation: 0.0,
         title: const Text(
-          'Admin Corner',
+          'My Profile',
           style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        padding: const EdgeInsets.all(8),
-        decoration: const BoxDecoration(color: Colors.white),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
-                onTap: () async {
-                  await _addTrain(context);
-                },
-                title: const Text('Add Train'),
-              ),
-              ListTile(
-                onTap: () async {
-                  await _addTrip(context);
-                },
-                title: const Text('Add Trip'),
-              ),
-              ListTile(
-                onTap: () async {
-                  await _addLocation(context);
-                },
-                title: const Text('Add Location'),
-              ),
-              Consumer(builder: (context, ref, child) {
-                return ListTile(
-                  onTap: () {
-                    ref.read(daoProvider).getTrainWagons('te');
-                  },
-                  title: const Text('Add class'),
-                );
-              })
-            ],
+      body: Center(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.only(
+            top: 50,
+            right: 8,
+            left: 8,
+          ),
+          decoration: const BoxDecoration(color: Colors.white),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                UserCircleAvatar(
+                  radiusOut: 40,
+                  radiusIn: 38,
+                )
+                // ListTile(
+                //   onTap: () async {
+                //     await _addTrain(context);
+                //   },
+                //   title: const Text('Add Train'),
+                // ),
+                // ListTile(
+                //   onTap: () async {
+                //     await _addTrip(context);
+                //   },
+                //   title: const Text('Add Trip'),
+                // ),
+                // ListTile(
+                //   onTap: () async {
+                //     await _addLocation(context);
+                //   },
+                //   title: const Text('Add Location'),
+                // ),
+                // Consumer(builder: (context, ref, child) {
+                //   return ListTile(
+                //     onTap: () {
+                //       ref.read(daoProvider).getTrainWagons('te');
+                //     },
+                //     title: const Text('Add class'),
+                //   );
+                // })
+              ],
+            ),
           ),
         ),
       ),

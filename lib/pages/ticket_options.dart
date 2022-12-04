@@ -341,10 +341,11 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                     final String tripID = ref.read(tripIDProvider);
                     final String? owner =
                         ref.read(authenticationProvider).currentUser?.uid;
-                    final String ticketID = generateRandomString(10);
+                    // final String ticketID = generateRandomString(10);
                     ref
                         .read(ticketIDProvider.notifier)
-                        .update((state) => ticketID);
+                        .update((state) => generateRandomString(10));
+
                     List<String> ticketPassengers = passengers
                         .map((passenger) =>
                             '${passenger.firstName} ${passenger.lastName}')
@@ -352,12 +353,16 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
 
                     Ticket ticket = Ticket(
                         owner: owner.toString(),
-                        ticketID: ticketID,
+                        ticketID: ref.watch(ticketIDProvider),
                         seats: seatList,
                         passengers: ticketPassengers,
                         totalPrice: allCost);
-                    ref.read(daoProvider).storeTicketDetails(tripID, ticket);
-                    context.push('/ticket');
+                    ref
+                        .read(daoProvider)
+                        .storeTicketDetails(tripID, ticket)
+                        .then((value) {
+                      context.push('/thanks');
+                    });
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
