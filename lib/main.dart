@@ -51,8 +51,9 @@ class TrainApp extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.green),
-                borderRadius: BorderRadius.circular(12)),
+              borderSide: const BorderSide(color: Colors.green),
+              borderRadius: BorderRadius.circular(12),
+            ),
           )),
     );
   }

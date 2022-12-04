@@ -171,10 +171,14 @@ class _AdminPageState extends ConsumerState<AdminPage> {
                 },
                 title: const Text('Add Location'),
               ),
-              ListTile(
-                onTap: () {},
-                title: const Text('Add class'),
-              )
+              Consumer(builder: (context, ref, child) {
+                return ListTile(
+                  onTap: () {
+                    ref.read(daoProvider).getTrainWagons('te');
+                  },
+                  title: const Text('Add class'),
+                );
+              })
             ],
           ),
         ),

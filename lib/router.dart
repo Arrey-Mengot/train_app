@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:train_app/pages/boarding_pass.dart';
 import 'package:train_app/pages/home.dart';
 import 'package:train_app/pages/home_page.dart';
 import 'package:train_app/pages/login_page.dart';
@@ -21,12 +22,10 @@ final routerProvider = Provider((ref) {
         final createAccountLoc = state.namedLocation('signup');
         final creatingAccount = state.subloc == createAccountLoc;
         final homeLoc = state.namedLocation('home');
-        // final resetPasswordLoc = state.namedLocation('passwordReset');
-        // final resetingPassword = state.subloc == resetPasswordLoc;
 
         if (!loggedIn && !loggingIn && !creatingAccount) return loginLoc;
         if (loggedIn && (loggingIn || creatingAccount)) return homeLoc;
-        // if (resetingPassword) return resetPasswordLoc;
+
         return null;
       },
       initialLocation: '/login',
@@ -73,6 +72,12 @@ final routerProvider = Provider((ref) {
             path: '/passwordReset',
             builder: (context, state) {
               return const PasswordResetPage();
+            }),
+        GoRoute(
+            name: 'ticket',
+            path: '/ticket',
+            builder: (context, state) {
+              return const BoardingPassPage();
             }),
       ]);
 });

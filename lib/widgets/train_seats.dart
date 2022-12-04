@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../pages/ticket_options.dart';
+
+int waIndex = 0;
+int seIndex = 0;
+final wagonIndexProvider = StateProvider<int>((ref) => waIndex);
+final seatIndexProvider = StateProvider<int>((ref) => seIndex);
 
 class TrainSeat extends StatefulWidget {
   const TrainSeat({super.key});
@@ -10,6 +19,7 @@ class TrainSeat extends StatefulWidget {
 class _TrainSeatState extends State<TrainSeat> {
   int wagonIndex = 0;
   int seatIndex = 0;
+
   var wagon = List.generate(
       6,
       (wagonIndex) => List<Map<String, dynamic>>.generate(30, (seatIndex) {
@@ -26,6 +36,8 @@ class _TrainSeatState extends State<TrainSeat> {
     // final int _noSeatsPerWagon = 5;
 
     // int seatIndex = 0;
+    // final wagonIndexProvider = StateProvider<int>((ref) => wagonIndex);
+    // final seatIndexProvider = StateProvider<int>((ref) => seatIndex);
 
     void selectWagon(int selectedWagonIndex) {
       setState(() {
@@ -173,28 +185,37 @@ class _TrainSeatState extends State<TrainSeat> {
                           child: Column(
                             children: List.generate(
                                 wagon.length,
-                                (index) => GestureDetector(
-                                      onTap: () => selectWagon(index),
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        height: 130,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.green,
-                                                width: 2.0),
-                                            color: index == wagonIndex
-                                                ? const Color.fromARGB(
-                                                    255, 53, 124, 55)
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: Center(
-                                            child: Text(
-                                                "W${(index + 1).toString()}")),
-                                      ),
-                                    )),
+                                (index) =>
+                                    Consumer(builder: (context, ref, child) {
+                                      return GestureDetector(
+                                        //select wagon Index
+                                        onTap: () {
+                                          ref
+                                              .read(wagonIndexProvider.notifier)
+                                              .state = index + 1;
+                                          selectWagon(index);
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          height: 130,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.green,
+                                                  width: 2.0),
+                                              color: index == wagonIndex
+                                                  ? const Color.fromARGB(
+                                                      255, 53, 124, 55)
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Center(
+                                              child: Text(
+                                                  "W${(index + 1).toString()}")),
+                                        ),
+                                      );
+                                    })),
                           ),
                         ),
                       ),
@@ -219,14 +240,19 @@ class _TrainSeatState extends State<TrainSeat> {
                                   color: const Color(0xff1cbf8e), width: 2.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: IconButton(
-                                onPressed: () {
-                                  selectSeat(index);
-                                },
-                                icon: const Icon(
-                                  Icons.airline_seat_recline_extra_sharp,
-                                  color: Colors.blueGrey,
-                                )),
+                            child: Consumer(builder: (context, ref, child) {
+                              return IconButton(
+                                  onPressed: () {
+                                    //seat index
+                                    ref.read(seatIndexProvider.notifier).state =
+                                        index + 1;
+                                    selectSeat(index);
+                                  },
+                                  icon: const Icon(
+                                    Icons.airline_seat_recline_extra_sharp,
+                                    color: Colors.blueGrey,
+                                  ));
+                            }),
                           );
                         },
                       ),
@@ -248,33 +274,42 @@ class _TrainSeatState extends State<TrainSeat> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('Total Price'),
-                        Text('\$48.00'),
-                      ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          wagon[wagonIndex][seatIndex]
-                              .update('status', (value) => 'filled');
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 2.0,
-                            color: const Color(0xff1cbf8e),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: const [
+                    //     Text('Total Price'),
+                    //     Text('\$48.00'),
+                    //   ],
+                    // ),
+                    Consumer(builder: (context, ref, child) {
+                      return TextButton(
+                        onPressed: () {
+                          int userWagon = ref.read(wagonIndexProvider);
+                          int userSeat = ref.read(seatIndexProvider);
+
+                          ref
+                              .read(seatProvider.notifier)
+                              .addSeats('Wagon:$userWagon Seat:$userSeat');
+                          setState(() {
+                            wagon[wagonIndex][seatIndex]
+                                .update('status', (value) => 'filled');
+                          });
+                          GoRouter.of(context).pop();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 12),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 2.0,
+                              color: const Color(0xff1cbf8e),
+                            ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          borderRadius: BorderRadius.circular(10),
+                          child: const Text("Continue"),
                         ),
-                        child: Text("Continue"),
-                      ),
-                    )
+                      );
+                    })
                   ],
                 ),
               ),

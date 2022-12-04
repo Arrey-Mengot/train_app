@@ -59,3 +59,9 @@ class Itinerary {
     };
   }
 }
+
+//passengers
+//firstName, lastName, isAdult, isChild, socialNumber
+
+//tickets
+//owner, seats, ticketClass

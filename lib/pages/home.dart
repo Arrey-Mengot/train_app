@@ -453,6 +453,12 @@ class SearchTripPage extends ConsumerWidget {
                                       (state) =>
                                           trip[index].sourceCode.toString(),
                                     );
+                                ref.read(trainIDProvider.notifier).update(
+                                      (state) => trip[index].trainId.toString(),
+                                    );
+                                ref.read(tripIDProvider.notifier).update(
+                                      (state) => trip[index].id.toString(),
+                                    );
 
                                 context.push('/options');
                               },
@@ -462,7 +468,7 @@ class SearchTripPage extends ConsumerWidget {
                                       to: trip[index].destination,
                                       from: trip[index].source,
                                       cost: trip[index].price.toString(),
-                                      trainName: 'DZ',
+                                      trainName: trip[index].trainId,
                                       arrivalTime: trip[index].arrivalDate,
                                       departureTime: trip[index].departureDate,
                                       duration:
@@ -500,6 +506,8 @@ final departureDateProvider = StateProvider<String>((ref) => '');
 final durationProvider = StateProvider<String>((ref) => '');
 final toCodeProvider = StateProvider<String>((ref) => '');
 final fromCodeProvider = StateProvider<String>((ref) => '');
+final trainIDProvider = StateProvider<String>((ref) => '');
+final tripIDProvider = StateProvider<String>((ref) => '');
 
 String dateFormater(DateTime date) {
   return "${date.year}-${date.month}-${date.day}";

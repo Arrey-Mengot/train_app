@@ -1,27 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:train_app/widgets/train_card.dart';
 
-class Ticket extends StatelessWidget {
-  const Ticket({super.key});
+// class Ticket extends StatelessWidget {
+//   const Ticket({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     const String agency = 'Touristic Express';
+//     const String location = 'Yde-Mvan';
+//     const String source = 'Yaounde';
+//     const String destination = 'Douala';
+//     const String sourceCode = 'YDE';
+//     const String destinationCode = 'DLA';
+//     const String departureDate = '2022-12-28';
+//     const String departureTime = '06:15 AM';
+//     const String arrivalDate = '2022-12-28';
+//     const String arrivalTime = '06:15 AM';
+//     const String duration = '3h 45m';
+//     const String trainCode = 'LT306';
+//     const String ticketClass = 'Buisiness';
+//     const String ticketID = 'A098674';
+//     const String passengers = '1 Adult';
+//     const String seat = 'Wagon:2 / Seat:22';
+//     return TicketCard(agency: agency, location: location, source: source, destination: destination, sourceCode: sourceCode, destinationCode: destinationCode, departureDate: departureDate, arrivalDate: arrivalDate, departureTime: departureTime, duration: duration, arrivalTime: arrivalTime, trainCode: trainCode, ticketClass: ticketClass, ticketID: ticketID, passengers: passengers, seat: seat);
+//   }
+// }
+
+class TicketCard extends StatelessWidget {
+  const TicketCard({
+    Key? key,
+    required this.agency,
+    required this.location,
+    required this.source,
+    required this.destination,
+    required this.sourceCode,
+    required this.destinationCode,
+    required this.departureDate,
+    required this.arrivalDate,
+    required this.departureTime,
+    required this.duration,
+    required this.arrivalTime,
+    required this.trainCode,
+    required this.ticketClass,
+    required this.ticketID,
+    required this.passengers,
+    required this.seat,
+  }) : super(key: key);
+
+  final String agency;
+  final String location;
+  final String source;
+  final String destination;
+  final String sourceCode;
+  final String destinationCode;
+  final String departureDate;
+  final String arrivalDate;
+  final String departureTime;
+  final String duration;
+  final String arrivalTime;
+  final String trainCode;
+  final String ticketClass;
+  final String ticketID;
+  final String passengers;
+  final String seat;
 
   @override
   Widget build(BuildContext context) {
-    const String agency = 'Touristic Express';
-    const String location = 'Yde-Mvan';
-    const String source = 'Yaounde';
-    const String destination = 'Douala';
-    const String sourceCode = 'YDE';
-    const String destinationCode = 'DLA';
-    const String departureDate = '2022-12-28';
-    const String departureTime = '06:15 AM';
-    const String arrivalDate = '2022-12-28';
-    const String arrivalTime = '06:15 AM';
-    const String duration = '3h 45m';
-    const String trainCode = 'LT306';
-    const String ticketClass = 'Buisiness';
-    const String ticketID = 'A098674';
-    const String passengers = '1 Adult';
-    const String seat = 'Wagon:2 / Seat:22';
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
       height: MediaQuery.of(context).size.height * 0.7,
@@ -49,16 +93,16 @@ class Ticket extends StatelessWidget {
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(agency,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff03314B))),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Text(location,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w200,
                                     color: Color(0xff03314B)))
                           ],
@@ -70,15 +114,15 @@ class Ticket extends StatelessWidget {
                     ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
                             source,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w200,
                                 color: Colors.grey),
                           ),
                           Text(destination,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey))
                         ]),
@@ -88,7 +132,7 @@ class Ticket extends StatelessWidget {
                     Stack(
                       alignment: AlignmentDirectional.center,
                       children: [
-                        const SourceTODestination(
+                        SourceTODestination(
                             fromCode: sourceCode, toCode: destinationCode),
                         Icon(Icons.train, color: Colors.grey.withOpacity(0.6))
                       ],
@@ -98,15 +142,15 @@ class Ticket extends StatelessWidget {
                     ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
                             departureDate,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w200,
                                 color: Colors.grey),
                           ),
                           Text(arrivalDate,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey)),
                         ]),
@@ -115,19 +159,19 @@ class Ticket extends StatelessWidget {
                     ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
                             departureTime,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w200,
                                 color: Colors.grey),
                           ),
                           Text(duration,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey)),
                           Text(arrivalTime,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey)),
                         ]),
@@ -139,8 +183,8 @@ class Ticket extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               "Train No",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
@@ -148,7 +192,7 @@ class Ticket extends StatelessWidget {
                             ),
                             Text(
                               trainCode,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff03314B)),
                             ),
@@ -156,16 +200,16 @@ class Ticket extends StatelessWidget {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Class",
+                          children: [
+                            const Text(
+                              "Cost",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey),
                             ),
                             Text(
-                              ticketClass,
-                              style: TextStyle(
+                              '\$ $ticketClass',
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff03314B)),
                             ),
@@ -173,8 +217,8 @@ class Ticket extends StatelessWidget {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               "Ticket ID",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
@@ -182,7 +226,7 @@ class Ticket extends StatelessWidget {
                             ),
                             Text(
                               ticketID,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff03314B)),
                             ),
@@ -198,8 +242,8 @@ class Ticket extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               "Passenger",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
@@ -207,7 +251,7 @@ class Ticket extends StatelessWidget {
                             ),
                             Text(
                               passengers,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff03314B)),
                             ),
@@ -215,8 +259,8 @@ class Ticket extends StatelessWidget {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               "Seat",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
@@ -224,7 +268,7 @@ class Ticket extends StatelessWidget {
                             ),
                             Text(
                               seat,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xff03314B)),
                             ),
