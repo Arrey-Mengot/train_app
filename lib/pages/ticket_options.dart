@@ -9,6 +9,7 @@ import 'package:train_app/models/model_dao.dart';
 import 'package:train_app/models/ticket.dart';
 import 'package:train_app/models/users.dart';
 import 'package:train_app/pages/home.dart';
+import 'package:train_app/widgets/dropdown.dart';
 import 'package:train_app/widgets/train_seats.dart';
 import '../widgets/class_card.dart';
 import '../widgets/train_card.dart';
@@ -25,14 +26,14 @@ class TicketOptionsPage extends ConsumerStatefulWidget {
 }
 
 class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
+  String? selectedValue = null;
   bool isRoundTrip = false;
   List<Passenger> passengers = [];
   List<String> seatChoosen = [];
   String generateRandomString(int len) {
     var r = Random();
-    String randomString =
-        String.fromCharCodes(List.generate(len, (index) => r.nextInt(33) + 89));
-    return randomString;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    return List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
   }
 
   @override
@@ -129,14 +130,28 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                           isScrollControlled: true,
                           context: context,
                           builder: (context) => Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
                                 padding: const EdgeInsets.only(
                                     left: 20, right: 20, top: 30),
                                 child: Form(
                                     key: _formKey,
                                     child: Column(
                                       children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(bottom: 30),
+                                          child: Text(
+                                            'Passenger Details',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
                                         TextFormField(
                                           controller: _firstNameController,
+                                          validator: (value) => value == null
+                                              ? "First Name Required"
+                                              : null,
                                           decoration: const InputDecoration(
                                               hintText: 'First Name'),
                                         ),
@@ -144,6 +159,9 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                                           height: 10,
                                         ),
                                         TextFormField(
+                                          validator: (value) => value == null
+                                              ? "Last Name Required"
+                                              : null,
                                           controller: _lastNameController,
                                           decoration: const InputDecoration(
                                               hintText: 'Last Name'),
@@ -151,18 +169,11 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                                         const SizedBox(
                                           height: 10,
                                         ),
-                                        TextFormField(
-                                          controller: _categoryController,
-                                          decoration: const InputDecoration(
-                                              hintText: 'Traveller Category'),
+                                        CategoryDropDownMenuField(
+                                          selectedValue: selectedValue,
                                         ),
                                         const SizedBox(
                                           height: 10,
-                                        ),
-                                        TextFormField(
-                                          controller: _securityController,
-                                          decoration: const InputDecoration(
-                                              hintText: 'Social Security #'),
                                         ),
                                         const SizedBox(
                                           height: 10,
@@ -178,9 +189,9 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                                                   lastName: _lastNameController
                                                       .text
                                                       .trim(),
-                                                  socialNumber: int.parse(
-                                                      _securityController.text
-                                                          .trim()),
+                                                  // socialNumber: int.parse(
+                                                  //     _securityController.text
+                                                  //         .trim()),
                                                   isAdult: true,
                                                   isChild: false,
                                                 );
@@ -190,8 +201,21 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                                                 });
                                               }
                                             },
-                                            child: const Text('Continue',
-                                                style: TextStyle(fontSize: 15)))
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 25,
+                                                      vertical: 12),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: Colors.green,
+                                                      width: 1.2)),
+                                              child: const Text('Continue',
+                                                  style:
+                                                      TextStyle(fontSize: 15)),
+                                            ))
                                       ],
                                     )),
                               ));
@@ -342,9 +366,8 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                     final String? owner =
                         ref.read(authenticationProvider).currentUser?.uid;
                     // final String ticketID = generateRandomString(10);
-                    ref
-                        .read(ticketIDProvider.notifier)
-                        .update((state) => generateRandomString(10));
+                    ref.read(ticketIDProvider.notifier).state =
+                        generateRandomString(10);
 
                     List<String> ticketPassengers = passengers
                         .map((passenger) =>
@@ -356,12 +379,15 @@ class TicketOptionsPageState extends ConsumerState<TicketOptionsPage> {
                         ticketID: ref.watch(ticketIDProvider),
                         seats: seatList,
                         passengers: ticketPassengers,
-                        totalPrice: allCost);
+                        totalPrice: allCost,
+                        status: 'valid');
                     ref
                         .read(daoProvider)
                         .storeTicketDetails(tripID, ticket)
                         .then((value) {
                       context.push('/thanks');
+                      ref.watch(seatProvider.notifier).emptySeats();
+                      passengers = [];
                     });
                   },
                   child: Container(
@@ -406,7 +432,17 @@ class SeatsNotifier extends StateNotifier<List<String>> {
   SeatsNotifier() : super([]);
 
   void addSeats(seat) {
+    state = [...state];
     state.add(seat);
+  }
+
+  void removeSeats(index) {
+    state = [...state];
+    state.removeAt(index);
+  }
+
+  void emptySeats() {
+    state = [];
   }
 }
 

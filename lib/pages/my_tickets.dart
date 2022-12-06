@@ -41,11 +41,20 @@ class UserTickets extends ConsumerWidget {
         loading: () => const CircularProgressIndicator(),
         data: (tickets) => ListView.builder(
             itemCount: tickets.length,
-            itemBuilder: (context, index) => ListTile(
+            itemBuilder: (context, index) {
+              return Card(
+                child: ListTile(
                   title: Text(
                     tickets[index].ticketID,
                     style: const TextStyle(color: Colors.black),
                   ),
-                )));
+                  trailing: const Icon(
+                    Icons.arrow_right_rounded,
+                    color: Colors.black,
+                    size: 30,
+                  ),
+                ),
+              );
+            }));
   }
 }

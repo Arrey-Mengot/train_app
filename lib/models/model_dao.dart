@@ -16,6 +16,7 @@ class Dao {
   List<Ticket> tickets = [];
   List<Ticket> ticketsByUser = [];
   List<Ticket> trips = [];
+  List<String> ticketIDs = [];
 
   Stream get allCities => db.collection('locations').snapshots();
 
@@ -195,6 +196,37 @@ class Dao {
     });
   }
 
+  //Get ticket IDS for a given trip
+  Future<List<String>> getTicketIDs(String tripID) async {
+    //Use our from and to methods here to convert from and to firebase objects
+    return db
+        .collection('trips')
+        .withConverter(
+            fromFirestore: Itinerary.fromFirestore,
+            toFirestore: (Itinerary trip, _) => trip.toFireStore())
+        .where('id', isEqualTo: tripID)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        db
+            .collection('trips')
+            .doc(element.id)
+            .collection('tickets')
+            .withConverter(
+                fromFirestore: Ticket.fromFirestore,
+                toFirestore: (Ticket ticket, _) => ticket.toFireStore())
+            .get()
+            .then((subcol) {
+          for (var tic in subcol.docs) {
+            ticketIDs.add(tic.data().ticketID);
+          }
+        });
+      }
+
+      return ticketIDs;
+    });
+  }
+
 //get train ticket by ID
   Future<List<Ticket>> getTrainTicketByID(String tripID, ticketID) async {
     //Use our from and to methods here to convert from and to firebase objects
@@ -219,9 +251,6 @@ class Dao {
             .then((subcol) {
           for (var tic in subcol.docs) {
             tickets.add(tic.data());
-            print(tic.data().owner);
-            print(tic.data().ticketID);
-            // print(element.data().noOfSeats);
           }
         });
       }
@@ -230,37 +259,39 @@ class Dao {
     });
   }
 
-  // Stream<List<Ticket>> getTrainTicketsByID(String tripID, ticketID) {
-  //   // List<Ticket> tickets;
+  // UPDATE TICKET BY ID
 
-  //   return db
-  //       .collection('trips')
-  //       .withConverter(
-  //           fromFirestore: Itinerary.fromFirestore,
-  //           toFirestore: (Itinerary trip, _) => trip.toFireStore())
-  //       .where('id', isEqualTo: tripID)
-  //       .get()
-  //       .then((value) {
-  //     for (var e in value.docs) {
-  //       db
-  //           .collection('trips')
-  //           .doc(e.id)
-  //           .collection('tickets')
-  //           .withConverter(
-  //               fromFirestore: Ticket.fromFirestore,
-  //               toFirestore: (Ticket ticket, _) => ticket.toFireStore())
-  //           .where('ticketID', isEqualTo: ticketID)
-  //           .snapshots()
-  //           .map((event) {
-  //         List<Ticket> tics = [];
-  //         for (var element in event.docs) {
-  //           tics.add(element.data());
-  //         }
-  //         return tics;
-  //       });
-  //     }
-  //   });
-  // }
+  Future<void> updateTrainTicketByID(
+      String tripID, ticketID, Map<String, dynamic> data) async {
+    //Use our from and to methods here to convert from and to firebase objects
+    await db
+        .collection('trips')
+        .where('id', isEqualTo: tripID)
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        db
+            .collection('trips')
+            .doc(element.id)
+            .collection('tickets')
+            .where('ticketID', isEqualTo: ticketID)
+            .get()
+            .then((subcol) {
+          for (var doc in subcol.docs) {
+            db
+                .collection('trips')
+                .doc(element.id)
+                .collection('tickets')
+                .doc(doc.id)
+                .update(data)
+                .then((value) => print('ticket was cancelled'));
+          }
+        });
+      }
+
+      return tickets;
+    });
+  }
 
 //get train ticket by user
   Future<List<Ticket>> getTrainTicketsByUser(String owner) async {
@@ -319,3 +350,17 @@ final futureTicketByUserProvider = FutureProvider<List<Ticket>>(
     return dao.getTrainTicketsByUser(userID);
   },
 );
+
+final futureTicketIDProvider = FutureProvider<List<String>>(
+  (ref) {
+    final dao = ref.watch(daoProvider);
+    final tripID = ref.watch(tripIDProvider);
+
+    return dao.getTicketIDs(tripID);
+  },
+);
+
+// final washingtonRef = FirebaseFirestore.instance.collection("cites").doc("DC");
+// final who = washingtonRef.update({"capital": true}).then(
+//     (value) => print("DocumentSnapshot successfully updated!"),
+//     onError: (e) => print("Error updating document $e"));

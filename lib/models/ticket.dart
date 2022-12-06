@@ -5,6 +5,7 @@ class Ticket {
   final String ticketID;
   final int totalPrice;
   final String? ticketClass;
+  final String? status;
   final List<String>? passengers;
   final List<String>? seats;
 
@@ -12,6 +13,7 @@ class Ticket {
     required this.owner,
     required this.ticketID,
     required this.totalPrice,
+    this.status,
     this.ticketClass,
     this.passengers,
     this.seats,
@@ -27,6 +29,7 @@ class Ticket {
       ticketID: data?['ticketID'],
       totalPrice: data?['totalPrice'],
       ticketClass: data?['ticketClass'],
+      status: data?['status'],
       passengers: data?['passengers'] is Iterable
           ? List.from(data?['passengers'])
           : null,
@@ -39,6 +42,7 @@ class Ticket {
       if (passengers != null) "passengers": passengers,
       if (seats != null) "seats": seats,
       if (ticketClass != null) "ticketClass": ticketClass,
+      if (status != null) "status": status,
       "ticketID": ticketID,
       "owner": owner,
       "totalPrice": totalPrice,

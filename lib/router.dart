@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:train_app/pages/adminScan.dart';
 import 'package:train_app/pages/boarding_pass.dart';
+import 'package:train_app/pages/cancel_ticket.dart';
 import 'package:train_app/pages/home.dart';
 import 'package:train_app/pages/home_page.dart';
 import 'package:train_app/pages/login_page.dart';
@@ -9,6 +11,7 @@ import 'package:train_app/pages/my_tickets.dart';
 import 'package:train_app/pages/sign_up_page.dart';
 import 'package:train_app/pages/thanks.dart';
 import 'package:train_app/pages/ticket_options.dart';
+import 'package:train_app/pages/verify_ticket.dart';
 import 'package:train_app/widgets/train_seats.dart';
 
 import 'authentication/auth.dart';
@@ -57,6 +60,12 @@ final routerProvider = Provider((ref) {
               return const SearchTripPage();
             }),
         GoRoute(
+            name: 'tripresults',
+            path: '/tripresults',
+            builder: (context, state) {
+              return const SearchTripPageResults();
+            }),
+        GoRoute(
             name: 'options',
             path: '/options',
             builder: (context, state) {
@@ -86,5 +95,23 @@ final routerProvider = Provider((ref) {
             builder: (context, state) {
               return const ThankYou();
             }),
+        GoRoute(
+            name: 'cancel',
+            path: '/cancel',
+            builder: (context, state) {
+              return const CancelTicketMessage();
+            }),
+        GoRoute(
+            name: 'verifyticket',
+            path: '/verifyticket',
+            builder: (context, state) {
+              return const MyWidget();
+            }),
+        GoRoute(
+            name: 'admintrip',
+            path: '/admintrip',
+            builder: (context, state) {
+              return const AdminChooseTrip();
+            })
       ]);
 });

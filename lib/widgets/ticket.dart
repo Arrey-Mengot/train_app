@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:train_app/models/model_dao.dart';
+import 'package:train_app/pages/home.dart';
+import 'package:train_app/pages/ticket_options.dart';
 import 'package:train_app/widgets/train_card.dart';
+import 'package:barcode/barcode.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 
 // class Ticket extends StatelessWidget {
 //   const Ticket({super.key});
@@ -26,7 +33,7 @@ import 'package:train_app/widgets/train_card.dart';
 //   }
 // }
 
-class TicketCard extends StatelessWidget {
+class TicketCard extends ConsumerWidget {
   const TicketCard({
     Key? key,
     required this.agency,
@@ -44,7 +51,7 @@ class TicketCard extends StatelessWidget {
     required this.ticketClass,
     required this.ticketID,
     required this.passengers,
-    required this.seat,
+    required this.seats,
   }) : super(key: key);
 
   final String agency;
@@ -61,11 +68,14 @@ class TicketCard extends StatelessWidget {
   final String trainCode;
   final String ticketClass;
   final String ticketID;
-  final String passengers;
-  final String seat;
+  final List<String>? passengers;
+  final List<String>? seats;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    String ticketID = ref.watch(ticketIDProvider);
+    String tripID = ref.watch(tripIDProvider);
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
       height: MediaQuery.of(context).size.height * 0.7,
@@ -86,31 +96,55 @@ class TicketCard extends StatelessWidget {
                 return Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const CircleAvatar(
-                          child: Icon(Icons.train_outlined, size: 25),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(agency,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff03314B))),
-                            const SizedBox(
-                              height: 5,
+                            const CircleAvatar(
+                              child: Icon(Icons.train_outlined, size: 25),
                             ),
-                            Text(location,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w200,
-                                    color: Color(0xff03314B)))
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(agency,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xff03314B))),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(location,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w200,
+                                        color: Color(0xff03314B)))
+                              ],
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text(
+                              'Status: ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff03314B)),
+                            ),
+                            ref.watch(futureTicketByUserProvider).when(
+                                error: (err, stack) => Container(),
+                                loading: () => Container(),
+                                data: (tickets) => const Text(
+                                      'valid',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green),
+                                    ))
                           ],
                         )
                       ],
                     ),
                     const Divider(
-                      height: 45,
+                      height: 25,
                     ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,7 +210,7 @@ class TicketCard extends StatelessWidget {
                                   color: Colors.grey)),
                         ]),
                     const Divider(
-                      height: 45,
+                      height: 25,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,7 +269,7 @@ class TicketCard extends StatelessWidget {
                       ],
                     ),
                     const Divider(
-                      height: 45,
+                      height: 25,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,37 +278,76 @@ class TicketCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Passenger",
+                              "Passengers",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey),
                             ),
-                            Text(
-                              passengers,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff03314B)),
-                            ),
+                            Column(
+                              children:
+                                  List.generate(passengers!.length, (index) {
+                                return Text(
+                                  passengers![index],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff03314B)),
+                                );
+                              }),
+                            )
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             const Text(
-                              "Seat",
+                              "Seats",
                               style: TextStyle(
                                   fontWeight: FontWeight.w200,
                                   color: Colors.grey),
                             ),
-                            Text(
-                              seat,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xff03314B)),
-                            ),
+                            Column(
+                              children: List.generate(seats!.length, (index) {
+                                return Text(
+                                  seats![index],
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff03314B)),
+                                );
+                              }),
+                            )
                           ],
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    BarcodeWidget(
+                      barcode: Barcode.code128(escapes: true),
+                      data: ref.watch(ticketIDProvider),
+                      width: 200,
+                      height: 70,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ref.watch(daoProvider).updateTrainTicketByID(
+                            tripID, ticketID, {'status': 'cancelled'});
+                        context.go('/cancel');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 13, vertical: 8),
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1.5, color: Colors.pink),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Text(
+                          'Cancel Trip',
+                          style: TextStyle(fontSize: 14, color: Colors.pink),
+                        ),
+                      ),
                     )
                   ],
                 );
@@ -311,13 +384,26 @@ class TicketCard extends StatelessWidget {
               ),
             ),
           ),
-          // const Positioned(
-          //   bottom: 0,
-          //   child: Divider(
-          //     indent: 20,
-          //     endIndent: 20,
-          //     thickness: 8,
-          //     height: 10,
+          // Positioned(
+          //   bottom: 15,
+          //   // left: 10,
+          //   child: TextButton(
+          //     onPressed: () {
+          //       ref.watch(daoProvider).updateTrainTicketByID(
+          //           tripID, ticketID, {'status': 'cancelled'});
+          //       context.go('/cancel');
+          //     },
+          //     child: Container(
+          //       padding:
+          //           const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+          //       decoration: BoxDecoration(
+          //           border: Border.all(width: 1.5, color: Colors.pink),
+          //           borderRadius: BorderRadius.circular(8)),
+          //       child: const Text(
+          //         'Cancel Trip',
+          //         style: TextStyle(fontSize: 14, color: Colors.pink),
+          //       ),
+          //     ),
           //   ),
           // ),
         ],

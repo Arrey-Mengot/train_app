@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:train_app/pages/home_page.dart';
+import 'package:train_app/pages/ticket_options.dart';
 
 import '../models/model_dao.dart';
 
@@ -37,11 +40,17 @@ class MyDrawer extends StatelessWidget {
           Consumer(builder: (context, ref, child) {
             return ListTile(
               onTap: () {
-                ref.read(daoProvider).getTrainWagons('te');
+                // ref.read(daoProvider).getTrainWagons('te');
               },
               title: const Text('Add class'),
             );
           }),
+          ListTile(
+            onTap: () {
+              context.push('/admintrip');
+            },
+            title: const Text('Verfy Tickets'),
+          )
         ],
       ),
     );

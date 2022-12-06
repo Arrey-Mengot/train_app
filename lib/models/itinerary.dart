@@ -11,18 +11,21 @@ class Itinerary {
   final int? price;
   final String? sourceCode;
   final String? destinationCode;
+  // final List<List<Map<String, dynamic>>>? trainSeats;
 
-  Itinerary(
-      {required this.source,
-      required this.destination,
-      this.id,
-      this.trainId,
-      required this.departureDate,
-      required this.arrivalDate,
-      this.price,
-      this.departureTime,
-      this.sourceCode,
-      this.destinationCode});
+  Itinerary({
+    required this.source,
+    required this.destination,
+    this.id,
+    this.trainId,
+    required this.departureDate,
+    required this.arrivalDate,
+    this.price,
+    this.departureTime,
+    this.sourceCode,
+    this.destinationCode,
+    // this.trainSeats
+  });
 
   //method to read document snapshot from firestore and transform it directly to the trip model
   factory Itinerary.fromFirestore(
@@ -31,16 +34,20 @@ class Itinerary {
   ) {
     final data = snapshot.data();
     return Itinerary(
-        id: data?["id"],
-        source: data?["source"],
-        destination: data?["destination"],
-        trainId: data?["trainId"],
-        departureDate: data?["departureDate"],
-        departureTime: data?["departureTime"],
-        arrivalDate: data?["arrivalDate"],
-        price: data?["price"],
-        sourceCode: data?["sourceCode"],
-        destinationCode: data?["destinationCode"]);
+      id: data?["id"],
+      source: data?["source"],
+      destination: data?["destination"],
+      trainId: data?["trainId"],
+      departureDate: data?["departureDate"],
+      departureTime: data?["departureTime"],
+      arrivalDate: data?["arrivalDate"],
+      price: data?["price"],
+      sourceCode: data?["sourceCode"],
+      destinationCode: data?["destinationCode"],
+      // trainSeats: data?["trainSeats"] is Iterable
+      //     ? List.from(data?["trainSeats"])
+      //     : null,
+    );
   }
 
   // method to write the model to firestore
@@ -56,6 +63,7 @@ class Itinerary {
       "price": price,
       if (sourceCode != null) "sourceCode": sourceCode,
       if (destinationCode != null) "destinationCode": destinationCode,
+      // if (trainSeats != null) "trainSeats": trainSeats,
     };
   }
 }

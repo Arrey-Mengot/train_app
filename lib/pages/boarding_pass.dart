@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:train_app/models/model_dao.dart';
@@ -5,6 +6,7 @@ import 'package:train_app/pages/home.dart';
 import 'package:train_app/pages/ticket_options.dart';
 import 'package:train_app/widgets/ticket.dart';
 
+import '../models/itinerary.dart';
 import '../models/ticket.dart';
 
 class BoardingPassPage extends ConsumerWidget {
@@ -12,8 +14,8 @@ class BoardingPassPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tripID = ref.watch(tripIDProvider);
-    final ticketID = ref.watch(ticketIDProvider);
+    // final tripID = ref.watch(tripIDProvider);
+    // final ticketID = ref.watch(ticketIDProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xff03314B),
@@ -58,8 +60,8 @@ class MyTicket extends ConsumerWidget {
         trainCode: ref.watch(trainIDProvider).toUpperCase(),
         ticketClass: tickets.isEmpty ? '' : tickets[0].totalPrice.toString(),
         ticketID: tickets.isEmpty ? '' : tickets[0].ticketID,
-        passengers: tickets.isEmpty ? '' : tickets[0].passengers![0],
-        seat: tickets.isEmpty ? '' : tickets[0].seats![0],
+        passengers: tickets[0].passengers,
+        seats: tickets[0].seats,
       ),
     );
   }
